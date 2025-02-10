@@ -136,7 +136,7 @@ package ElectricVehicleUsages {
 			interface UIComs: Forward connect
 				cpu.communication to ui.read;
 			interface motorCtrl: controlMotor connect
-			`	gpu.write to motor_C3.motorHub;
+			`	gpu.write to motor_C3(1..4).motorHub;
 		}	
 	}
 		
@@ -156,8 +156,6 @@ package ElectricVehicleUsages {
 				human.manualcontrol to controller.human;
 			interface UIComs: Forward connect
 				cpu.communication to ui.read;
-			interface motorCtrl: controlMotor connect
-			`	cpu.write to motor_C3.motorHub;
 		}	
 	}
 	
@@ -183,11 +181,7 @@ package ElectricVehicleUsages {
 				cpu.communication to controller.remote;
 			interface UIComs: Forward connect
 				cpu.communication to ui.read;
-			interface motorCtrl: controlMotor connect
-			`	cpu.write to motor_C3.motorHub;
 		}	
 	}	
-	
-	part E_VehicleTotal subsets E_Vehicle_Remote, E_Vehicle_Automatic, E_Vehicle_Manual;
 
 }

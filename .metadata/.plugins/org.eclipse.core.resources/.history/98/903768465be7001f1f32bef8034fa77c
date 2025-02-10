@@ -187,7 +187,5 @@ package ElectricVehicleUsages {
 			`	cpu.write to motor_C3.motorHub;
 		}	
 	}	
-	
-	part E_VehicleTotal subsets E_Vehicle_Remote, E_Vehicle_Automatic, E_Vehicle_Manual;
 
 }

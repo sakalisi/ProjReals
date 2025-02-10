@@ -47,12 +47,10 @@ package ElectricVehicleDefinitions {
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
-        port write: ComputeWithVariableIF;
     }
 	part def GPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
-        port write: ComputeWithVariableIF;
     }
 	part def Battery {
 		attribute capacity :> ISQ::energy;
@@ -113,40 +111,12 @@ package ElectricVehicleDefinitions {
 	 */
 	part def Module{
 		attribute input;
-		port output: ComputeCommunicationIF;
+		port output : ComputeCommunicationIF;
 	}
 	part def connection_5G :> Module;
 	part def connection_bluetooth :> Module;
 	part def connection_wifi :> Module;
 	
-	/* Defining the Autopilot Module */
-	part def AutonomousDrivingModule {
-        part cpu: CPU;
-        part gpu: GPU;
-        part sensors: Sensor;
-        part controller: Controller;
-        part module: Module;
-        part ui: UI;
-    }
-	
-	part def DriverDrivingModule{
-		part human: HumanDrivingDevices;
-		part controller: Controller;
-		part gps: GPS;
-		part ui: UI;
-		part cpu: CPU;
-	}
-	
-	part def RemoteDrivingModule{
-		part remote: RemoteDevices;
-		part controller: Controller;
-		part c5g: connection_5G;
-		part cw: connection_wifi;
-		part cb: connection_bluetooth;
-		part sensors: Sensor;
-		part ui: UI;
-		part cpu: CPU;
-	}
 	
 	/* PORT DEFINITIONS */
 	
@@ -277,12 +247,33 @@ package ElectricVehicleDefinitions {
 		flow input.turn to output.turn;
 	}
 	
-	interface def controlMotor {
-		doc /* Handling Motor Control */
-		end input: ComputeWithVariableIF;
-		end motor: MotorHubIF;
-		
-		flow input.voltage to motor.wattage;
+	/* Defining the Autopilot Module */
+	part def AutonomousDrivingModule {
+        part cpu: CPU;
+        part gpu: GPU;
+        part sensors: Sensor;
+        part controller: Controller;
+        part module: Module;
+        part ui: UI;
+    }
+	
+	part def DriverDrivingModule{
+		part human: HumanDrivingDevices;
+		part controller: Controller;
+		part gps: GPS;
+		part ui: UI;
+		part cpu: CPU;
+	}
+	
+	part def RemoteDrivingModule{
+		part remote: RemoteDevices;
+		part controller: Controller;
+		part c5g: connection_5G;
+		part cw: connection_wifi;
+		part cb: connection_bluetooth;
+		part sensors: Sensor;
+		part ui: UI;
+		part cpu: CPU;
 	}
 	
 }

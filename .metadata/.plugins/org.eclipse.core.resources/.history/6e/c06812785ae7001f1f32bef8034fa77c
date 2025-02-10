@@ -281,8 +281,6 @@ package ElectricVehicleDefinitions {
 		doc /* Handling Motor Control */
 		end input: ComputeWithVariableIF;
 		end motor: MotorHubIF;
-		
-		flow input.voltage to motor.wattage;
 	}
 	
 }

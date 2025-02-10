@@ -47,12 +47,10 @@ package ElectricVehicleDefinitions {
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
-        port write: ComputeWithVariableIF;
     }
 	part def GPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
-        port write: ComputeWithVariableIF;
     }
 	part def Battery {
 		attribute capacity :> ISQ::energy;
@@ -277,12 +275,6 @@ package ElectricVehicleDefinitions {
 		flow input.turn to output.turn;
 	}
 	
-	interface def controlMotor {
-		doc /* Handling Motor Control */
-		end input: ComputeWithVariableIF;
-		end motor: MotorHubIF;
-		
-		flow input.voltage to motor.wattage;
-	}
+	
 	
 }

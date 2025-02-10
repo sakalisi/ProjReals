@@ -131,63 +131,22 @@ package ElectricVehicleUsages {
 				Cams.input to cpu.read;
 			interface CNNInterface: Forward connect
 				cpu.communication to gpu.communication;
-			interface Act: ActAuto connect
+			interface Act: Forward connect
 				gpu.communication to controller.inputCommunication;
-			interface UIComs: Forward connect
-				cpu.communication to ui.read;
-			interface motorCtrl: controlMotor connect
-			`	gpu.write to motor_C3.motorHub;
+			
 		}	
 	}
 		
 	part E_Vehicle_Manual subsets vehicle_C3 {
 		part HumanDrive: DriverDrivingModule {
+			part LIDAR: Lidar;
 			part RADAR: Radar;
 			part SPD_Meter: Speedometer;
+			part Mic: Microphone;
 			part Cams: Camera [3];
 			
-			interface HandleRADAR: SensorHandle connect
-				RADAR.input to cpu.read;
-			interface HandleSPD_Meter: SensorHandle connect
-				SPD_Meter.input to cpu.read;
-			interface HandleCams: SensorHandle connect
-				Cams.input to cpu.read;
-			interface actMan: ActManual connect
-				human.manualcontrol to controller.human;
-			interface UIComs: Forward connect
-				cpu.communication to ui.read;
-			interface motorCtrl: controlMotor connect
-			`	cpu.write to motor_C3.motorHub;
-		}	
-	}
-	
-	part E_Vehicle_Remote subsets vehicle_C3 {
-		part RemoteDrive: RemoteDrivingModule {
-			part RADAR: Radar;
-			part SPD_Meter: Speedometer;
-			part Cams: Camera [3];
 			
-			interface HandleRADAR: SensorHandle connect
-				RADAR.input to cpu.read;
-			interface HandleSPD_Meter: SensorHandle connect
-				SPD_Meter.input to cpu.read;
-			interface HandleCams: SensorHandle connect
-				Cams.input to cpu.read;
-			interface transmitComs5G: Forward connect
-				c5g.output to cpu.communication;
-			interface transmitComsWifi: Forward connect
-				cw.output to cpu.communication;
-			interface transmitComsBluetooth: Forward connect
-				cb.output to cpu.communication;
-			interface actMan: ActManual connect
-				cpu.communication to controller.remote;
-			interface UIComs: Forward connect
-				cpu.communication to ui.read;
-			interface motorCtrl: controlMotor connect
-			`	cpu.write to motor_C3.motorHub;
 		}	
 	}	
-	
-	part E_VehicleTotal subsets E_Vehicle_Remote, E_Vehicle_Automatic, E_Vehicle_Manual;
 
 }

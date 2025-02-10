@@ -47,12 +47,10 @@ package ElectricVehicleDefinitions {
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
-        port write: ComputeWithVariableIF;
     }
 	part def GPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
-        port write: ComputeWithVariableIF;
     }
 	part def Battery {
 		attribute capacity :> ISQ::energy;
@@ -113,40 +111,12 @@ package ElectricVehicleDefinitions {
 	 */
 	part def Module{
 		attribute input;
-		port output: ComputeCommunicationIF;
+		attribute output :> ISQ::voltage;
 	}
 	part def connection_5G :> Module;
 	part def connection_bluetooth :> Module;
 	part def connection_wifi :> Module;
 	
-	/* Defining the Autopilot Module */
-	part def AutonomousDrivingModule {
-        part cpu: CPU;
-        part gpu: GPU;
-        part sensors: Sensor;
-        part controller: Controller;
-        part module: Module;
-        part ui: UI;
-    }
-	
-	part def DriverDrivingModule{
-		part human: HumanDrivingDevices;
-		part controller: Controller;
-		part gps: GPS;
-		part ui: UI;
-		part cpu: CPU;
-	}
-	
-	part def RemoteDrivingModule{
-		part remote: RemoteDevices;
-		part controller: Controller;
-		part c5g: connection_5G;
-		part cw: connection_wifi;
-		part cb: connection_bluetooth;
-		part sensors: Sensor;
-		part ui: UI;
-		part cpu: CPU;
-	}
 	
 	/* PORT DEFINITIONS */
 	
@@ -185,16 +155,16 @@ package ElectricVehicleDefinitions {
 	}
 	
 	port def ManualControlIF {
-    	inout accelerator :> ISQ::force;  
-   	 	inout brake :> ISQ::force;  
-    	inout turn :> SI::degree;  
+    	in accelerator :> ISQ::force;  
+   	 	in brake :> ISQ::force;  
+    	in turn :> SI::degree;  
 	}
 	
 	port def RemoteControlIF {
-    	out accelerator :> ISQ::force;
-    	out brake :> ISQ::force;
-    	out turn :> SI::degree;
-    	out signalStrength :> ISQ::power;  
+    	in accelerator :> ISQ::force;
+    	in brake :> ISQ::force;
+    	in turn :> SI::degree;
+    	in signalStrength :> ISQ::power;  
 	}
 	
 	/* INTERFACE DEFINITIONS */
@@ -257,32 +227,32 @@ package ElectricVehicleDefinitions {
 		flow input.data to output.turn;
 	}
 	
-	interface def ActManual {
-		doc /* Acting on input */
-		end input: ManualControlIF;
-		end output: ManualControlIF;
+	/* Defining the Autopilot Module */
+	part def AutonomousDrivingModule {
+        part cpu: CPU;
+        part gpu: GPU;
+        part sensors: Sensor;
+        part controller: Controller;
+        part module: Module;
+    }
+	
+	part def DriverDrivingModule{
+		part human: HumanDrivingDevices;
+		part controller: Controller;
+		part gps: GPS;
 		
-		flow input.accelerator to output.accelerator;
-		flow input.brake to output.brake;
-		flow input.turn to output.turn;
+		flow human.manualcontrol to controller.human;
+		
 	}
 	
-	interface def ActRemote {
-		doc /* Acting on INput */
-		end input: RemoteControlIF;
-		end output: ManualControlIF;
+	part def RemoteDrivingModule{
+		part remote: RemoteDevices;
+		part controller: Controller;
+		part module: Module;
+		part sensors: Sensor;
 		
-		flow input.accelerator to output.accelerator;
-		flow input.brake to output.brake;
-		flow input.turn to output.turn;
-	}
-	
-	interface def controlMotor {
-		doc /* Handling Motor Control */
-		end input: ComputeWithVariableIF;
-		end motor: MotorHubIF;
-		
-		flow input.voltage to motor.wattage;
+		flow module.output to sensors.input;
+		flow remote.remotecontrol to controller.remote;
 	}
 	
 }
