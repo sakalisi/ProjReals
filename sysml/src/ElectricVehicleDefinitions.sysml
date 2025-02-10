@@ -44,31 +44,60 @@ package ElectricVehicleDefinitions {
 		attribute computationSpeed;
 		attribute memory;	
 	}
-	part def CPU :> processor;
-	part def GPU :> processor;
-	
+	part def CPU :> processor {
+        port communication: ComputeCommunicationIF;
+        port read: ComputeWithVariableIF;
+    }
+	part def GPU :> processor {
+        port communication: ComputeCommunicationIF;
+        port read: ComputeWithVariableIF;
+    }
 	part def Battery {
 		attribute capacity :> ISQ::energy;
 	}
+	 part def HumanDrivingDevices{
+    	port manualcontrol: ManualControlIF;
+    }
+    part def RemoteDevices{
+    	port remotecontrol: RemoteControlIF;
+    }
+    part def Motor{
+    	port MotorHub: MotorHubIF;
+    }
 	
 	/* Sensor Definitions */
 	part def Sensor {
-		attribute input;
+		port input: SensorReadIF;
 		attribute output :> ISQ::voltage;
 	}
-	part def GPS :> Sensor;
-	part def Lidar :> Sensor;
-	part def Radar :> Sensor;
-	part def Speedometer :> Sensor;
-	part def Microphone :> Sensor;
-	part def Camera :> Sensor;
+	part def GPS :> Sensor {
+    	port communication: ComputeCommunicationIF;  
+	}
+	part def Lidar :> Sensor{
+    	port communication: ComputeCommunicationIF;  
+	}
+	part def Radar :> Sensor{
+    	port communication: ComputeCommunicationIF;  
+	}
+	part def Speedometer :> Sensor{
+    	port communication: ComputeCommunicationIF;  
+	}
+	part def Microphone :> Sensor{
+    	port communication: ComputeCommunicationIF;  
+	}
+	part def Camera :> Sensor{
+    	port communication: ComputeCommunicationIF;  
+	}
 	
-	attribute def Mode;
 	part def Controller {
 		attribute Mode;
 		attribute AcceleratorValue;
 		attribute BrakeValue;
 		attribute TurnAngle;
+		
+		port inputCommunication: ComputeCommunicationIF;
+		port human: ManualControlIF;
+		port remote: RemoteControlIF;
 	}
 	
 	
@@ -77,10 +106,14 @@ package ElectricVehicleDefinitions {
 	 * Modules are used to ensure added functionality, like 5G, etc that are not sensors, but provide
 	 * better computation ability.
 	 */
-	part def module;
-	part def connection_5G :> module;
-	part def connection_bluetooth :> module;
-	part def connection_wifi :> module;
+	part def Module{
+		attribute input;
+		attribute output :> ISQ::voltage;
+	}
+	part def connection_5G :> Module;
+	part def connection_bluetooth :> Module;
+	part def connection_wifi :> Module;
+	
 	
 	/* PORT DEFINITIONS */
 	
@@ -89,7 +122,7 @@ package ElectricVehicleDefinitions {
 	}
 	
 	port def AxleMountIF { 
-		out transferredTorque :> ISQ::torque;
+		inout transferredTorque :> ISQ::torque;
 	}
 	
 	port def WheelHubIF { 
@@ -112,6 +145,25 @@ package ElectricVehicleDefinitions {
 		inout voltage :> ISQ::voltage;
 	}
 	
+	port def ComputeCommunicationIF{
+		inout dataRate;
+        inout dataType;
+        inout data;
+	}
+	
+	port def ManualControlIF {
+    	in accelerator :> ISQ::force;  
+   	 	in brake :> ISQ::force;  
+    	in turn :> SI::degree;  
+	}
+	
+	port def RemoteControlIF {
+    	in accelerator :> ISQ::force;
+    	in brake :> ISQ::force;
+    	in turn :> SI::degree;
+    	in signalStrength :> ISQ::power;  
+	}
+	
 	/* INTERFACE DEFINITIONS */
 	
 	interface def Mounting {
@@ -122,16 +174,20 @@ package ElectricVehicleDefinitions {
 		flow axleMount.transferredTorque to hub.appliedTorque;
 	}
 	
-	interface def PowerSupply {
+	interface def ComputedPowerSupply {
 		doc /* The Overall Definition for power going from battery to motor */
 		end battery: BatteryHubIF;
+		end sensor: SensorReadIF;
 		end motor: MotorHubIF;
 		
 		flow battery.wattage to motor.wattage;
+		flow sensor.voltage to motor.wattage;
 	}
 	
 	interface def motorMovement {
-		doc /* How the motor is supposed to move, is by converting wattage/current to torque */
+		doc /* 
+		 * How the motor is supposed to move, is by converting wattage/current to torque
+		 */
 		end motor: MotorHubIF;
 		end axleMount: AxleMountIF;
 		
@@ -139,10 +195,66 @@ package ElectricVehicleDefinitions {
 	}
 	
 	interface def SensorHandle {
+		doc /* 
+		 * Handling reading sensor and outputting compute voltage
+		 */
 		end SensorInput: SensorReadIF;
-		end compute: ComputeWithVariableIF;
+		end read: ComputeWithVariableIF;
 		
-		flow SensorInput.voltage to compute.voltage;
+		flow SensorInput.voltage to read.voltage;
+	} 
+	
+	interface def Forward {
+		doc /* Handling reading sensor and outputting compute voltage */
+		end compute1: ComputeCommunicationIF;
+		end compute2: ComputeCommunicationIF;
+		
+		flow compute1.dataRate to compute2.dataRate;
+		flow compute1.dataType to compute2.dataType;
+		flow compute1.data to compute2.data;
+	}
+	
+	interface def ActAuto {
+		doc /* Acting on input */
+		end input: ComputeCommunicationIF;
+		end output: ManualControlIF;
+		
+		flow input.data to output.accelerator;
+		flow input.data to output.brake;
+		flow input.data to output.turn;
+	}
+	
+	/* Defining the Autopilot Module */
+	part def AutonomousDrivingModule {
+        part cpu: CPU;
+        part gpu: GPU;
+        part sensors: Sensor;
+        part controller: Controller;
+        part module: Module;
+
+        flow module.output to sensors.input;
+        flow sensors.output to cpu.communication;
+        flow cpu.communication to gpu.communication;
+        flow gpu.communication to controller.inputCommunication;
+    }
+	
+	part def DriverDrivingModule{
+		part human: HumanDrivingDevices;
+		part controller: Controller;
+		part gps: GPS;
+		
+		flow human.manualcontrol to controller.human;
+		
+	}
+	
+	part def RemoteDrivingModule{
+		part remote: RemoteDevices;
+		part controller: Controller;
+		part module: Module;
+		part sensors: Sensor;
+		
+		flow module.output to sensors.input;
+		flow remote.remotecontrol to controller.remote;
 	}
 	
 }

@@ -1,0 +1,148 @@
+package ElectricVehicleDefinitions {
+	doc
+	/*
+	 * Electric Vehicle Initial Draft.
+	 */
+
+	private import ScalarValues::*;
+	private import Quantities::*;
+	private import MeasurementReferences::*;
+	private import ISQ::*;
+	private import SI::*;
+	
+	/* PART DEFINITIONS */
+	
+	part def E_Vehicle {
+		attribute mass :> ISQ::mass;
+		attribute color;
+	}
+	
+	
+	/*
+	 * Mechanical Components
+	 * 
+	 */
+	part def Transmission;	
+	part def AxleAssembly;
+	part def Axle {
+		port leftMountingPoint: AxleMountIF;
+		port rightMountingPoint: AxleMountIF;
+	}
+	part def Wheel {
+		port hub: WheelHubIF;
+	}
+	part def Lugbolt {
+		attribute tighteningTorque :> ISQ::torque;
+	}
+	
+	/*
+	 * Electric Components
+	 * 
+	 */
+	 
+	part def processor {
+		attribute computationSpeed;
+		attribute memory;	
+	}
+	part def CPU :> processor;
+	part def GPU :> processor;
+	
+	part def Battery {
+		attribute capacity :> ISQ::energy;
+	}
+	
+	/* Sensor Definitions */
+	part def Sensor {
+		attribute input;
+		attribute output :> ISQ::voltage;
+	}
+	part def GPS :> Sensor;
+	part def Lidar :> Sensor;
+	part def Radar :> Sensor;
+	part def Speedometer :> Sensor;
+	part def Microphone :> Sensor;
+	part def Camera :> Sensor;
+	
+	attribute def Mode;
+	part def Controller {
+		attribute Mode;
+		attribute AcceleratorValue;
+		attribute BrakeValue;
+		attribute TurnAngle;
+	}
+	
+	
+	/*Module Definitions */
+	doc /* 
+	 * Modules are used to ensure added functionality, like 5G, etc that are not sensors, but provide
+	 * better computation ability.
+	 */
+	part def module;
+	part def connection_5G :> module;
+	part def connection_bluetooth :> module;
+	part def connection_wifi :> module;
+	
+	/* PORT DEFINITIONS */
+	
+	port def DriveIF { 
+		in driveTorque :> ISQ::torque;
+	}
+	
+	port def AxleMountIF { 
+		out transferredTorque :> ISQ::torque;
+	}
+	
+	port def WheelHubIF { 
+		in appliedTorque :> ISQ::torque;
+	}
+	
+	port def MotorHubIF {
+		inout wattage :> ISQ::electricPower;
+	}
+	
+	port def BatteryHubIF {
+		out wattage :> ISQ::electricPower;
+	}
+	
+	port def SensorReadIF {
+		out voltage :> ISQ::voltage;
+	}
+	
+	port def ComputeWithVariableIF {
+		inout voltage :> ISQ::voltage;
+	}
+	
+	/* INTERFACE DEFINITIONS */
+	
+	interface def Mounting {
+		doc /* The definition of the interface for mounting a Wheel to an Axle. */
+		end axleMount: AxleMountIF;
+		end hub: WheelHubIF;
+		
+		flow axleMount.transferredTorque to hub.appliedTorque;
+	}
+	
+	interface def PowerSupply {
+		doc /* The Overall Definition for power going from battery to motor */
+		end battery: BatteryHubIF;
+		end motor: MotorHubIF;
+		
+		flow battery.wattage to motor.wattage;
+	}
+	
+	interface def motorMovement {
+		doc /* How the motor is supposed to move, is by converting wattage/current to torque */
+		end motor: MotorHubIF;
+		end axleMount: AxleMountIF;
+		
+		flow motor.wattage to axleMount.transferredTorque;
+	}
+	
+	interface def SensorHandle {
+		end SensorInput: SensorReadIF;
+		end compute: ComputeWithVariableIF;
+		
+		flow SensorInput.voltage to compute.voltage;
+	}
+	
+}
