@@ -7,9 +7,6 @@ package ElectricVehicleUsages {
 	private import SI::N;
 	private import SI::m;
 	private import SI::kg;
-	private import SI::kW;
-	private import SI::W;
-	private import SI::s;
 	private import ScalarFunctions::*;
 
 	public import ElectricVehicleDefinitions::*;
@@ -18,14 +15,9 @@ package ElectricVehicleUsages {
 	T1 = 10.0 [N * m];
 	T2 = 20.0 [N * m];
 	LugboltMass = 0.04 [kg];
-	WheelMass = 25 [kg];
-	MotorMass = 250 [kg];
-	BatteryMass = 2000 [kg];
-	AxleMass = 90 [kg];
-	SensorRating = 0.01 [W]; 
-	BatteryLife = 1000 [kW * s * 3600];
-	CPUrating = 10 [kW * s * 3600];
-	GPUrating = 10 [kW * s * 3600];
+	WheelMass = 2.5 [kg];
+	MotorMass = 25 [kg];
+	BatteryMass = 200 [kg];
 	
 	
 	/* PARTS */	
@@ -48,27 +40,20 @@ package ElectricVehicleUsages {
 			part frontWheel[2] subsets narrowRimWheel {
 				part redefines lugbolt[4] {
 					attribute redefines tighteningTorque = T1;
-					attribute redefines mass = LugboltMass;
+					attribute redefines mass = LugboltMass * 4;
 				}
-				attribute redefines mass = WheelMass;
 			}
-			part frontAxle: Axle {
-				attribute redefines mass = AxleMass;	
-			}
-			
+			part frontAxle: Axle;
 		}		
 		part rearAxleAssembly: AxleAssembly {
 			part rearWheel[2] subsets wideRimWheel {
 				part redefines lugbolt[6] {
 					attribute redefines tighteningTorque = T2;
 					
-					attribute redefines mass = LugboltMass;
+					attribute redefines mass = LugboltMass * 6;
 				}
-				attribute redefines mass = WheelMass;
 			}
-			part rearAxle: Axle {
-				attribute redefines mass = AxleMass;	
-			}			
+			part rearAxle: Axle;			
 		}
 		
 		part motor_C3[4]: Motor {

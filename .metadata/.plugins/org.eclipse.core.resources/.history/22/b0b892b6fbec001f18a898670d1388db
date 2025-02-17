@@ -124,20 +124,14 @@ package ElectricVehicleDefinitions {
 	part def Speedometer :> Sensor{
     	port communication: ComputeCommunicationIF;  
     	attribute rating :> ISQ::power;
-    	attribute tireDiameter;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Microphone :> Sensor{
     	port communication: ComputeCommunicationIF;  
     	attribute rating :> ISQ::power;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Camera :> Sensor{
     	port communication: ComputeCommunicationIF; 
     	attribute rating :> ISQ::power; 
-    	attribute fieldOfView;
-    	attribute pixelation;
-    	attribute frequency :> ISQ::frequency;
 	}
 	
 	part def Controller {

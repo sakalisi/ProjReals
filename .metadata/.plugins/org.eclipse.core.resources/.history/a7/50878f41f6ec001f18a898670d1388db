@@ -6,10 +6,6 @@ package ElectricVehicleUsages {
 
 	private import SI::N;
 	private import SI::m;
-	private import SI::kg;
-	private import SI::kW;
-	private import SI::W;
-	private import SI::s;
 	private import ScalarFunctions::*;
 
 	public import ElectricVehicleDefinitions::*;
@@ -17,16 +13,6 @@ package ElectricVehicleUsages {
 	/* VALUES */	 
 	T1 = 10.0 [N * m];
 	T2 = 20.0 [N * m];
-	LugboltMass = 0.04 [kg];
-	WheelMass = 25 [kg];
-	MotorMass = 250 [kg];
-	BatteryMass = 2000 [kg];
-	AxleMass = 90 [kg];
-	SensorRating = 0.01 [W]; 
-	BatteryLife = 1000 [kW * s * 3600];
-	CPUrating = 10 [kW * s * 3600];
-	GPUrating = 10 [kW * s * 3600];
-	
 	
 	/* PARTS */	
 	part narrowRimWheel: Wheel {
@@ -48,32 +34,21 @@ package ElectricVehicleUsages {
 			part frontWheel[2] subsets narrowRimWheel {
 				part redefines lugbolt[4] {
 					attribute redefines tighteningTorque = T1;
-					attribute redefines mass = LugboltMass;
 				}
-				attribute redefines mass = WheelMass;
 			}
-			part frontAxle: Axle {
-				attribute redefines mass = AxleMass;	
-			}
-			
+			part frontAxle: Axle;
 		}		
 		part rearAxleAssembly: AxleAssembly {
 			part rearWheel[2] subsets wideRimWheel {
 				part redefines lugbolt[6] {
 					attribute redefines tighteningTorque = T2;
-					
-					attribute redefines mass = LugboltMass;
 				}
-				attribute redefines mass = WheelMass;
 			}
-			part rearAxle: Axle {
-				attribute redefines mass = AxleMass;	
-			}			
+			part rearAxle: Axle;			
 		}
 		
 		part motor_C3[4]: Motor {
 			port motorHub: MotorHubIF;
-			attribute redefines mass = MotorMass;
 		}
 	}
 	
@@ -145,15 +120,15 @@ package ElectricVehicleUsages {
 		part AutonomousDrive: AutonomousDrivingModule {
 			
 			interface HandleLIDAR: SensorHandle connect
-				vehicle_C3.LIDAR.input to cpu.read;
+				LIDAR.input to cpu.read;
 			interface HandleRADAR: SensorHandle connect
-				vehicle_C3.RADAR.input to cpu.read;
+				RADAR.input to cpu.read;
 			interface HandleSPD_Meter: SensorHandle connect
-				vehicle_C3.SPD_Meter.input to cpu.read;
+				SPD_Meter.input to cpu.read;
 			interface HandleMic: SensorHandle connect
-				vehicle_C3.Mic.input to cpu.read;
+				Mic.input to cpu.read;
 			interface HandleCams: SensorHandle connect
-				vehicle_C3.Cams.input to cpu.read;
+				Cams.input to cpu.read;
 			interface CNNInterface: Forward connect
 				cpu.communication to gpu.communication;
 			interface Act: ActAuto connect
@@ -161,7 +136,7 @@ package ElectricVehicleUsages {
 			interface UIComs: Forward connect
 				cpu.communication to ui.read;
 			interface motorCtrl: controlMotor connect
-				gpu.write to vehicle_C3.motor_C3.motorHub;
+				gpu.write to motor_C3.motorHub;
 		}	
 	}
 		
@@ -169,17 +144,17 @@ package ElectricVehicleUsages {
 		part HumanDrive: DriverDrivingModule {
 			
 			interface HandleRADAR: SensorHandle connect
-				vehicle_C3.RADAR.input to cpu.read;
+				RADAR.input to cpu.read;
 			interface HandleSPD_Meter: SensorHandle connect
-				vehicle_C3.SPD_Meter.input to cpu.read;
+				SPD_Meter.input to cpu.read;
 			interface HandleCams: SensorHandle connect
-				vehicle_C3.Cams.input to cpu.read;
+				Cams.input to cpu.read;
 			interface actMan: ActManual connect
 				human.manualcontrol to controller.human;
 			interface UIComs: Forward connect
 				cpu.communication to ui.read;
 			interface motorCtrl: controlMotor connect
-				cpu.write to vehicle_C3.motor_C3.motorHub;
+				cpu.write to motor_C3.motorHub;
 		}	
 	}
 	
@@ -187,11 +162,11 @@ package ElectricVehicleUsages {
 		part RemoteDrive: RemoteDrivingModule {
 			
 			interface HandleRADAR: SensorHandle connect
-				vehicle_C3.RADAR.input to cpu.read;
+				RADAR.input to cpu.read;
 			interface HandleSPD_Meter: SensorHandle connect
-				vehicle_C3.SPD_Meter.input to cpu.read;
+				SPD_Meter.input to cpu.read;
 			interface HandleCams: SensorHandle connect
-				vehicle_C3.Cams.input to cpu.read;
+				Cams.input to cpu.read;
 			interface transmitComs5G: Forward connect
 				c5g.output to cpu.communication;
 			interface transmitComsWifi: Forward connect
@@ -203,12 +178,10 @@ package ElectricVehicleUsages {
 			interface UIComs: Forward connect
 				cpu.communication to ui.read;
 			interface motorCtrl: controlMotor connect
-				cpu.write to vehicle_C3.motor_C3.motorHub;
+				cpu.write to motor_C3.motorHub;
 		}	
 	}	
 	
-	part E_VehicleTotal subsets E_Vehicle_Remote, E_Vehicle_Automatic, E_Vehicle_Manual{
-			
-	}
+	part E_VehicleTotal subsets E_Vehicle_Remote, E_Vehicle_Automatic, E_Vehicle_Manual;
 
 }

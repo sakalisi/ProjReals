@@ -15,10 +15,6 @@ package ElectricVehicleDefinitions {
 	part def E_Vehicle {
 		attribute mass :> ISQ::mass;
 		attribute color;
-		attribute maxMass :> ISQ::mass;
-		attribute requiredBatteryPower :> ISQ::energy;
-		attribute currentBatteryLife:> ISQ::energy;
-		attribute maxBatteryLife :> ISQ::energy;
 	}
 	
 	
@@ -98,46 +94,26 @@ package ElectricVehicleDefinitions {
 	part def GPS :> Sensor {
     	port communication: ComputeCommunicationIF; 
     	attribute rating :> ISQ::power; 
-    	attribute range;
-    	attribute accuracy;
-    	attribute antenna;
-    	attribute satelliteCount;
-    	attribute augmentationAlgorithms;
 	}
 	part def Lidar :> Sensor{
     	port communication: ComputeCommunicationIF; 
     	attribute rating :> ISQ::power; 
-    	attribute sourceType;
-    	attribute wavelength :> ISQ::length;
-    	attribute beamDivergence;
-    	attribute multiEchoCepacity;
 	}
-	
 	part def Radar :> Sensor{
     	port communication: ComputeCommunicationIF; 
     	attribute rating :> ISQ::power; 
-    	attribute transmitterPower :> rating;
-    	attribute antennaSize;
-    	attribute freq :> ISQ::frequency;
 	}
-	
 	part def Speedometer :> Sensor{
     	port communication: ComputeCommunicationIF;  
     	attribute rating :> ISQ::power;
-    	attribute tireDiameter;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Microphone :> Sensor{
     	port communication: ComputeCommunicationIF;  
     	attribute rating :> ISQ::power;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Camera :> Sensor{
     	port communication: ComputeCommunicationIF; 
     	attribute rating :> ISQ::power; 
-    	attribute fieldOfView;
-    	attribute pixelation;
-    	attribute frequency :> ISQ::frequency;
 	}
 	
 	part def Controller {

@@ -24,9 +24,8 @@ package ElectricVehicleUsages {
 	AxleMass = 90 [kg];
 	SensorRating = 0.01 [W]; 
 	BatteryLife = 1000 [kW * s * 3600];
-	CPUrating = 10 [kW * s * 3600];
+	CPurating = 10 [kW * s * 3600];
 	GPUrating = 10 [kW * s * 3600];
-	
 	
 	/* PARTS */	
 	part narrowRimWheel: Wheel {

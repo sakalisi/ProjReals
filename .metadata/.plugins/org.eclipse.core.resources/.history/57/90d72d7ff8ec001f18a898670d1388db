@@ -15,10 +15,6 @@ package ElectricVehicleDefinitions {
 	part def E_Vehicle {
 		attribute mass :> ISQ::mass;
 		attribute color;
-		attribute maxMass :> ISQ::mass;
-		attribute requiredBatteryPower :> ISQ::energy;
-		attribute currentBatteryLife:> ISQ::energy;
-		attribute maxBatteryLife :> ISQ::energy;
 	}
 	
 	
@@ -26,9 +22,7 @@ package ElectricVehicleDefinitions {
 	 * Mechanical Components
 	 * 
 	 */
-	part def Transmission {
-		attribute mass :> ISQ::mass;	
-	}	
+	part def Transmission;	
 	part def AxleAssembly;
 	part def Axle {
 		port leftMountingPoint: AxleMountIF;
@@ -52,7 +46,6 @@ package ElectricVehicleDefinitions {
 	part def processor {
 		attribute computationSpeed;
 		attribute memory;	
-		attribute rating :> ISQ::power;
 	}
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;
@@ -66,8 +59,6 @@ package ElectricVehicleDefinitions {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
         port write: ComputeWithVariableIF;
-        attribute ProcessorClockRate;
-        attribute ProcessorComputePotential;
     }
 	part def Battery {
 		attribute capacity :> ISQ::energy;
@@ -82,62 +73,33 @@ package ElectricVehicleDefinitions {
     part def Motor{
     	port MotorHub: MotorHubIF;
     	attribute mass :> ISQ::mass;
-    	attribute rating :> ISQ::power;
     }
     part def UI {
     	port read: ComputeCommunicationIF;
-		attribute rating :> ISQ::power;
     }
 	
 	/* Sensor Definitions */
 	part def Sensor {
 		port input: SensorReadIF;
 		attribute output :> ISQ::voltage;
-		attribute mass :> ISQ::mass;
 	}
 	part def GPS :> Sensor {
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute range;
-    	attribute accuracy;
-    	attribute antenna;
-    	attribute satelliteCount;
-    	attribute augmentationAlgorithms;
+    	port communication: ComputeCommunicationIF;  
 	}
 	part def Lidar :> Sensor{
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute sourceType;
-    	attribute wavelength :> ISQ::length;
-    	attribute beamDivergence;
-    	attribute multiEchoCepacity;
+    	port communication: ComputeCommunicationIF;  
 	}
-	
 	part def Radar :> Sensor{
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute transmitterPower :> rating;
-    	attribute antennaSize;
-    	attribute freq :> ISQ::frequency;
+    	port communication: ComputeCommunicationIF;  
 	}
-	
 	part def Speedometer :> Sensor{
     	port communication: ComputeCommunicationIF;  
-    	attribute rating :> ISQ::power;
-    	attribute tireDiameter;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Microphone :> Sensor{
     	port communication: ComputeCommunicationIF;  
-    	attribute rating :> ISQ::power;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Camera :> Sensor{
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute fieldOfView;
-    	attribute pixelation;
-    	attribute frequency :> ISQ::frequency;
+    	port communication: ComputeCommunicationIF;  
 	}
 	
 	part def Controller {

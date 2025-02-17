@@ -15,10 +15,6 @@ package ElectricVehicleDefinitions {
 	part def E_Vehicle {
 		attribute mass :> ISQ::mass;
 		attribute color;
-		attribute maxMass :> ISQ::mass;
-		attribute requiredBatteryPower :> ISQ::energy;
-		attribute currentBatteryLife:> ISQ::energy;
-		attribute maxBatteryLife :> ISQ::energy;
 	}
 	
 	
@@ -26,22 +22,17 @@ package ElectricVehicleDefinitions {
 	 * Mechanical Components
 	 * 
 	 */
-	part def Transmission {
-		attribute mass :> ISQ::mass;	
-	}	
+	part def Transmission;	
 	part def AxleAssembly;
 	part def Axle {
 		port leftMountingPoint: AxleMountIF;
 		port rightMountingPoint: AxleMountIF;
-		attribute mass :> ISQ::mass;
 	}
 	part def Wheel {
 		port hub: WheelHubIF;
-		attribute mass :> ISQ::mass;
 	}
 	part def Lugbolt {
 		attribute tighteningTorque :> ISQ::torque;
-		attribute mass :> ISQ::mass;
 	}
 	
 	/*
@@ -52,26 +43,19 @@ package ElectricVehicleDefinitions {
 	part def processor {
 		attribute computationSpeed;
 		attribute memory;	
-		attribute rating :> ISQ::power;
 	}
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
         port write: ComputeWithVariableIF;
-        
-        attribute ProcessorClockRate;
-        attribute ProcessorComputePotential;
     }
 	part def GPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
         port write: ComputeWithVariableIF;
-        attribute ProcessorClockRate;
-        attribute ProcessorComputePotential;
     }
 	part def Battery {
 		attribute capacity :> ISQ::energy;
-		attribute mass :> ISQ::mass;
 	}
 	 part def HumanDrivingDevices{
     	port manualcontrol: ManualControlIF;
@@ -81,63 +65,33 @@ package ElectricVehicleDefinitions {
     }
     part def Motor{
     	port MotorHub: MotorHubIF;
-    	attribute mass :> ISQ::mass;
-    	attribute rating :> ISQ::power;
     }
     part def UI {
     	port read: ComputeCommunicationIF;
-		attribute rating :> ISQ::power;
     }
 	
 	/* Sensor Definitions */
 	part def Sensor {
 		port input: SensorReadIF;
 		attribute output :> ISQ::voltage;
-		attribute mass :> ISQ::mass;
 	}
 	part def GPS :> Sensor {
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute range;
-    	attribute accuracy;
-    	attribute antenna;
-    	attribute satelliteCount;
-    	attribute augmentationAlgorithms;
+    	port communication: ComputeCommunicationIF;  
 	}
 	part def Lidar :> Sensor{
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute sourceType;
-    	attribute wavelength :> ISQ::length;
-    	attribute beamDivergence;
-    	attribute multiEchoCepacity;
+    	port communication: ComputeCommunicationIF;  
 	}
-	
 	part def Radar :> Sensor{
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute transmitterPower :> rating;
-    	attribute antennaSize;
-    	attribute freq :> ISQ::frequency;
+    	port communication: ComputeCommunicationIF;  
 	}
-	
 	part def Speedometer :> Sensor{
     	port communication: ComputeCommunicationIF;  
-    	attribute rating :> ISQ::power;
-    	attribute tireDiameter;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Microphone :> Sensor{
     	port communication: ComputeCommunicationIF;  
-    	attribute rating :> ISQ::power;
-    	attribute frequency :> ISQ::frequency;
 	}
 	part def Camera :> Sensor{
-    	port communication: ComputeCommunicationIF; 
-    	attribute rating :> ISQ::power; 
-    	attribute fieldOfView;
-    	attribute pixelation;
-    	attribute frequency :> ISQ::frequency;
+    	port communication: ComputeCommunicationIF;  
 	}
 	
 	part def Controller {
@@ -159,9 +113,6 @@ package ElectricVehicleDefinitions {
 	 */
 	part def Module{
 		attribute input;
-		attribute SecurityProtocol;
-		attribute BUS_type;
-		attribute count;
 		port output: ComputeCommunicationIF;
 	}
 	part def connection_5G :> Module;
@@ -176,8 +127,6 @@ package ElectricVehicleDefinitions {
         part controller: Controller;
         part module: Module;
         part ui: UI;
-        
-        attribute sensorTypes;
     }
 	
 	part def DriverDrivingModule{
@@ -186,8 +135,6 @@ package ElectricVehicleDefinitions {
 		part gps: GPS;
 		part ui: UI;
 		part cpu: CPU;
-		
-		attribute Lag;
 	}
 	
 	part def RemoteDrivingModule{
@@ -199,15 +146,13 @@ package ElectricVehicleDefinitions {
 		part sensors: Sensor;
 		part ui: UI;
 		part cpu: CPU;
-		
-		attribute Lag;
 	}
 	
 	/* PORT DEFINITIONS */
 	
 	port def DriveIF { 
 		in driveTorque :> ISQ::torque;
-		attribute ConnectionLag :> ISQ::time;
+		attribute ConnectionLag :> ISQ:time;
 	}
 	
 	port def AxleMountIF { 
@@ -220,38 +165,30 @@ package ElectricVehicleDefinitions {
 	
 	port def MotorHubIF {
 		inout wattage :> ISQ::electricPower;
-		attribute ConnectionLag :> ISQ::time;
 	}
 	
 	port def BatteryHubIF {
 		out wattage :> ISQ::electricPower;
-		attribute ConnectionLag :> ISQ::time;
 	}
 	
 	port def SensorReadIF {
 		out voltage :> ISQ::voltage;
-		attribute ConnectionLag :> ISQ::time;
-		attribute count;
-		attribute outType;
 	}
 	
 	port def ComputeWithVariableIF {
 		inout voltage :> ISQ::voltage;
-		attribute ConnectionLag :> ISQ::time;
 	}
 	
 	port def ComputeCommunicationIF{
 		inout dataRate;
         inout dataType;
         inout data;
-        attribute ConnectionLag :> ISQ::time;
 	}
 	
 	port def ManualControlIF {
     	inout accelerator :> ISQ::force;  
    	 	inout brake :> ISQ::force;  
     	inout turn :> SI::degree;  
-    	attribute ConnectionLag :> ISQ::time;
 	}
 	
 	port def RemoteControlIF {
@@ -259,7 +196,6 @@ package ElectricVehicleDefinitions {
     	out brake :> ISQ::force;
     	out turn :> SI::degree;
     	out signalStrength :> ISQ::power;  
-    	attribute ConnectionLag :> ISQ::time;
 	}
 	
 	/* INTERFACE DEFINITIONS */

@@ -7,9 +7,7 @@ package ElectricVehicleUsages {
 	private import SI::N;
 	private import SI::m;
 	private import SI::kg;
-	private import SI::kW;
 	private import SI::W;
-	private import SI::s;
 	private import ScalarFunctions::*;
 
 	public import ElectricVehicleDefinitions::*;
@@ -23,10 +21,6 @@ package ElectricVehicleUsages {
 	BatteryMass = 2000 [kg];
 	AxleMass = 90 [kg];
 	SensorRating = 0.01 [W]; 
-	BatteryLife = 1000 [kW * s * 3600];
-	CPUrating = 10 [kW * s * 3600];
-	GPUrating = 10 [kW * s * 3600];
-	
 	
 	/* PARTS */	
 	part narrowRimWheel: Wheel {
