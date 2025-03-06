@@ -1,0 +1,132 @@
+package Requirements_EV {
+	private import ScalarValues::*;
+	private import VectorValues::*;
+	private import ISQ::*;
+	private import SI::*;
+	public import ElectricVehicleUsages::*;
+	public import ElectricVehicleDefinitions::*;
+	public import 'Vehicle Requirements'::*;
+	//public import VehicleActionDefinition::*;
+	
+	package 'Vehicle Requirements' {
+		requirement def <'1'> AutonomousOperationRequirement {
+			/*
+			 * The optional requirement ID  of this requirement ('1') is given after the keyword "id" (using name syntax).
+			 * Every requirement is parameterized by a "subject". The "subject" of this requirement is implicitly "Anything".
+			 */
+		
+			doc /* This requirement handles the capability of fully autonomous functionality under urban and highway conditions. */
+			
+			attribute LiDARRange: ScalarValues::Number;
+			attribute beamDivergence: ScalarValues::Number;
+			attribute beamDiv_max: ScalarValues::Number;
+			attribute LiDAR_range_min: ScalarValues::Number;
+			attribute cameraPixelation: ScalarValues::Number;
+			attribute cameraPixelationMax: ScalarValues::Number;
+			attribute cameraView: ScalarValues::Number;
+			attribute cameraViewRequired: ScalarValues::Number;
+			attribute sensorLatency: ScalarValues::Number;
+			attribute sensorLatencyMax: ScalarValues::Number;
+			attribute GPSrange: ScalarValues::Number;
+			attribute GPSrangeMin: ScalarValues::Number;
+			attribute GPSaccuracy: ScalarValues::Number;
+			attribute GPSaccuracyMin: ScalarValues::Number;
+			attribute GPSLocation: VectorValues::ThreeVectorValue;
+			attribute GPSLocPrev: VectorValues::ThreeVectorValue;
+			attribute satteliteCount: ScalarValues::Number;
+			attribute satteliteCountMin: ScalarValues::Number;
+			attribute SpeedLimit: ScalarValues::Number;
+			
+			//attribute LidarRating;
+			//attribute RadarRating;
+			//attribute CameraRating;
+			//attribute MotorRating;
+			//attribute ProcessorRating;
+			//attribute GPS_sensorRating;
+			//attribute BatteryStorageOutMax;
+			//attribute BatteryStoreageRequired
+			
+			
+			assume constraint LidarBeamDivConstraint {
+				beamDivergence <= beamDiv_max; 
+			}
+			
+			assume constraint LidarRangeConstraint {
+				LiDARRange > LiDAR_range_min;
+			}
+			
+			assume constraint LatencyConstraint {
+				sensorLatency <= sensorLatencyMax;
+			}
+			
+			assume constraint CameraPixelationConstraint {
+				cameraPixelation < cameraPixelationMax; 
+			}
+			
+			assume constraint CameraFOVConstraint {
+				cameraView >= cameraViewRequired; 
+			}
+			
+			assume constraint GPSAccuracyConstraint {
+				GPSaccuracy >= GPSaccuracyMin; 
+			}
+		}
+		
+		requirement def <'2'> PowerRequirement {
+			/*
+			 * The optional requirement ID  of this requirement ('1') is given after the keyword "id" (using name syntax).
+			 * Every requirement is parameterized by a "subject". The "subject" of this requirement is implicitly "Anything".
+			 */
+		
+			doc /* This requirement handles the capability of fully autonomous functionality under urban and highway conditions. */
+			
+			attribute LiDARRange: ScalarValues::Number;
+			attribute beamDivergence: ScalarValues::Number;
+			attribute beamDiv_max: ScalarValues::Number;
+			attribute LiDAR_range_min: ScalarValues::Number;
+			attribute cameraPixelation: ScalarValues::Number;
+			attribute cameraPixelationMax: ScalarValues::Number;
+			attribute cameraView: ScalarValues::Number;
+			attribute cameraViewRequired: ScalarValues::Number;
+			attribute sensorLatency: ScalarValues::Number;
+			attribute sensorLatencyMax: ScalarValues::Number;
+			attribute GPSrange: ScalarValues::Number;
+			attribute GPSrangeMin: ScalarValues::Number;
+			attribute GPSaccuracy: ScalarValues::Number;
+			attribute GPSaccuracyMin: ScalarValues::Number;
+			attribute GPSLocation: VectorValues::ThreeVectorValue;
+			attribute GPSLocPrev: VectorValues::ThreeVectorValue;
+			attribute satteliteCount: ScalarValues::Number;
+			attribute satteliteCountMin: ScalarValues::Number;
+			attribute SpeedLimit: ScalarValues::Number;
+			
+			//attribute LidarRating;
+			//attribute RadarRating;
+			//attribute CameraRating;
+			//attribute MotorRating;
+			//attribute ProcessorRating;
+			//attribute GPS_sensorRating;
+			//attribute BatteryStorageOutMax;
+			//attribute BatteryStoreageRequired
+			
+			
+			assume constraint LidarBeamDivConstraint {
+				beamDivergence <= beamDiv_max; 
+			}
+			
+			assume constraint LidarRangeConstraint {
+				LiDARRange > LiDAR_range_min;
+			}
+			
+			assume constraint LatencyConstraint {
+				sensorLatency <= sensorLatencyMax;
+			}
+			
+			assume constraint GPSAccuracyConstraint {
+				GPSaccuracy >= GPSaccuracyMin; 
+			}
+		}
+			
+	}
+	
+}

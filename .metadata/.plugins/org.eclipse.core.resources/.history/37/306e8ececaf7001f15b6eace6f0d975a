@@ -1,0 +1,95 @@
+package Requirements_EV {
+	private import ScalarValues::Real;
+	private import ISQ::*;
+	private import SI::*;
+	public import ElectricVehicleUsages::*;
+	public import 'Vehicle Requirements'::*;
+	//public import VehicleActionDefinition::*;
+	
+	package 'Vehicle Requirements' {	
+		public import ElectricVehicleDefinitions::*;
+	
+		requirement def <'1'> MassLimitationRequirement {
+			/*
+			 * The optional requirement ID  of this requirement ('1') is given after the keyword "id" (using name syntax).
+			 * Every requirement is parameterized by a "subject". The "subject" of this requirement is implicitly "Anything".
+			 */
+		
+			// The requirement text is given by the documentation in the requirement def body.
+			doc /* The actual mass shall be less than or equal to the required mass. */
+			
+			attribute massActual: MassValue;
+			attribute massReqd: MassValue;
+			
+			require constraint {
+				/*
+				 * A constraint can be used to formalize a requirement.
+				 */
+				 massActual <= massReqd 
+			 }
+		}
+		
+		requirement def <'2'> ReliabilityRequirement;
+		
+		requirement <'1.1'> vehicleMass1: MassLimitationRequirement {
+			doc /* The vehicle mass shall be less than or equal to 2000 kg when the fuel tank is full. */
+			
+			subject vehicle: E_Vehicle {
+				/*
+				 * The subject of this requirement is redefined to be a "E_Vehicle".
+				 */
+			}
+			
+			attribute :>> massActual: MassValue = vehicle.mass {
+				/*
+				 * This redefinition binds the vehicle mass to the actual mass.
+				 */
+			}
+			
+			attribute :>> massReqd = 2000 [kg] {
+				/*
+				 * This redefinition sets the required mass to 2000 kg.
+				 */
+			}
+			
+			assume constraint BatteryConstraint {
+				/*
+				 * A constraint can also be used to specify an assumption.
+				 */
+			
+				doc /* full fuel tank */
+				vehicle.currentBatteryLife >= vehicle.requiredBatteryLife;
+			}
+		}
+			
+		requirement <'2.1'> vehicleMass2: MassLimitationRequirement {
+			doc /* The vehicle mass shall be less than or equal to 2500 kg when the fuel tank is empty. */
+			
+			subject vehicle : E_Vehicle;
+			
+			attribute :>> massActual: MassValue = vehicle.mass;
+			attribute :>> massReqd = 2500 [kg];
+		
+			assume constraint fuelConstraint {
+				doc /* empty fuel tank */
+				vehicle.fuelLevel == 0.0
+			}
+		}
+		
+		requirement <'2.2'> vehicleReliability2: ReliabilityRequirement {
+			subject vehicle : Vehicle;
+		}
+			
+		requirement <'3.1'> drivePowerInterface {
+			doc /* The engine shall transfer its generated torque to the transmission via the clutch interface. */
+			subject drivePwrPort: DrivePwrPort;
+		}
+		
+		requirement <'3.2'> torqueGeneration {
+			doc /* The engine shall generate torque as a function of RPM as shown in Table 1. */
+			subject generateTorque: 'Generate Torque';
+		}
+			
+	}
+	
+}

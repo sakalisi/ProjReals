@@ -1,0 +1,172 @@
+package ActionDefinition {
+	part def Image { }
+	part def PointCloud { }
+	part def RaderData { }
+	part def IMUData { }
+	part def GPSData { }
+	part def SensorFusion { }
+	part def Path { }
+	part def VehicleCommand { }
+	part def MotionStatus { }
+	part def RemoteCommand { }
+	part def Mode { }
+	part def RemoteControlData { }
+	
+	
+	action def SelectDrivingMode {
+	    in user_input : Mode;
+	    out mode_selected : Mode;
+	}
+	
+	
+	action def CaptureCameraData {
+	    out camera : Image;
+	}
+	
+	action def CaptureLidarData {
+	    out lidar : PointCloud;
+	}
+	
+	action def CaptureRaderData{
+	    out rader : RaderData;
+	}
+		
+	action def CaptureIMUData {
+	    out imu : IMUData;
+	}
+	
+	action def CaptureGPSData {
+	    out gps : GPSData;
+	}
+	
+	
+	action def SensorFusionProcess {
+	    in camera : Image;
+	    in lidar : PointCloud;
+	    in rader : CaptureRaderData;
+	    in imu : IMUData;
+	    in gps : GPSData;
+	    out fused_data : SensorFusion;
+	}
+	
+	action def CPUComputation {
+	    in data : SensorFusion;
+	    out processed_data : SensorFusion;
+	}
+	
+	
+	action def ProcessSensorData {
+		in input_mode : Mode;
+	    out fused_data : SensorFusion;
+	
+	    action camera : CaptureCameraData;
+	    action lidar : CaptureLidarData;
+	    action rader : CaptureRaderData;
+	    action imu : CaptureIMUData;
+	    action gps : CaptureGPSData;
+	    action fusion : SensorFusionProcess;
+	    action cpu_compute : CPUComputation;
+	
+	    flow camera.camera to fusion.camera;
+	    flow lidar.lidar to fusion.lidar;
+	    flow rader.rader to fusion.rader;
+	    flow imu.imu to fusion.imu;
+	    flow gps.gps to fusion.gps;
+	    flow fusion.fused_data to cpu_compute.data;
+	    flow cpu_compute.processed_data to self.fused_data;
+		
+	}
+	
+	action def GPUModelComputation {
+	    in fused_data : SensorFusion;
+	    out computed_path : Path;
+	}
+	
+	action def PathPlanning {
+	    in fused_data : SensorFusion;
+	    out planned_path : Path;
+	
+	    action gpu_compute : GPUModelComputation;
+	    flow self.fused_data to gpu_compute.fused_data;
+	    flow gpu_compute.computed_path to self.planned_path;
+	}
+	
+	action def ComputeDrivingDecision {
+	    in planned_path : Path;
+	    out control_command : VehicleCommand;
+	    
+	    action cpu_decision : CPUComputation;
+	    flow self.planned_path to cpu_decision.data;
+	    flow cpu_decision.processed_data to self.control_command;
+	}
+	
+	
+	action def ExecuteVehicleControl {
+	    in control_command : VehicleCommand;
+	    out vehicle_motion : MotionStatus;
+	}
+	
+	
+	action def NetworkCommunication {
+	    in vehicle_status : MotionStatus;
+	    in gps : GPSData;
+	    out remote_commands : RemoteCommand;
+	}
+	
+	
+	action def AutonomousDrivingSystem {
+	    in user_input : Mode;
+	    out vehicle_motion : MotionStatus;
+	
+	    action select_mode : SelectDrivingMode;
+	    action process_sensors : ProcessSensorData;
+	    action plan_path : PathPlanning;
+	    action compute_decision : ComputeDrivingDecision;
+	    action execute_control : ExecuteVehicleControl;
+	    action network : NetworkCommunication;
+	
+	    bind select_mode.mode_selected = process_sensors.input_mode;
+	    bind process_sensors.fused_data = plan_path.fused_data;
+	    bind plan_path.planned_path = compute_decision.planned_path;
+	    bind compute_decision.control_command = execute_control.control_command;
+	    bind execute_control.vehicle_motion = vehicle_motion;
+	}
+	
+	
+	action def ReceiveRemoteCommand {
+		in signal: RemoteControlData;
+	    out remote_command : RemoteControlData;
+	}
+	
+	
+	action def ParseRemoteCommand {
+	    in remote_command : RemoteControlData;
+	    out control_command : VehicleCommand;
+	    
+	     action cpu_decision : CPUComputation;
+	     flow self.remote_command to cpu_decision.data;
+	     flow cpu_decision.processed_data to self.control_command;
+	}
+	
+	
+	action def ExecuteVehicleController {
+	    in control_command : VehicleCommand;
+	    out vehicle_motion : MotionStatus;
+	}
+	
+	
+	action def RemoteDrivingSystem {
+	    in user_input : Mode;
+	    out vehicle_motion : MotionStatus;
+	
+	    action select_mode : SelectDrivingMode;
+	    action receive_command : ReceiveRemoteCommand;
+	    action parse_command : ParseRemoteCommand;
+	    action execute_control : ExecuteVehicleController;
+	
+	    bind select_mode.mode_selected = receive_command.signal;
+	    bind receive_command.remote_command = parse_command.remote_command;
+	    bind parse_command.control_command = execute_control.control_command;
+	    bind execute_control.vehicle_motion = vehicle_motion;
+	}
+}

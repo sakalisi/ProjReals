@@ -1,7 +1,7 @@
 package ElectricVehicleUsages {
 	doc
 	/*
-	 * Example usages of elements from the vehicle definitions model.
+	 * usages of elements from the Electric vehicle definitions model.
 	 */
 
 	private import SI::N;
@@ -121,6 +121,19 @@ package ElectricVehicleUsages {
 		part SPD_Meter: Speedometer;
 		part Mic: Microphone;
 		part Cams: Camera [3];
+		part GPS_Module: GPS;
+		
+		part cpu: CPU;
+        part gpu: GPU;
+        part controller: Controller;
+        part module: Module;
+        part ui: UI;
+		
+		part c5g: connection_5G;
+		part cw: connection_wifi;
+		part cb: connection_bluetooth;
+		
+		part batt: Battery;
 		
 		part transmission: Transmission {
 			port drive: ~DriveIF;
@@ -131,11 +144,21 @@ package ElectricVehicleUsages {
 				port drive: DriveIF;
 			}
 		}
+		part redefines frontAxleAssembly {
+			part redefines frontAxle {
+				port drive: DriveIF;
+			}
+		}
 		
-		interface driveShaft connect 
+		interface reardriveShaft connect 
 			transDrive ::> transmission.drive to axleDrive ::> rearAxleAssembly.rearAxle.drive {
 			flow transDrive.driveTorque to axleDrive.driveTorque;
 		}
+		interface forwarddriveShaft connect 
+			transDrive ::> transmission.drive to axleDrive ::> frontAxleAssembly.frontAxle.drive {
+			flow transDrive.driveTorque to axleDrive.driveTorque;
+		}
+		
 		
 		
 		
@@ -145,23 +168,23 @@ package ElectricVehicleUsages {
 		part AutonomousDrive: AutonomousDrivingModule {
 			
 			interface HandleLIDAR: SensorHandle connect
-				vehicle_C3.LIDAR.input to cpu.read;
+				vehicle_C3.LIDAR.input to vehicle_C3.cpu.read;
 			interface HandleRADAR: SensorHandle connect
-				vehicle_C3.RADAR.input to cpu.read;
+				vehicle_C3.RADAR.input to vehicle_C3.cpu.read;
 			interface HandleSPD_Meter: SensorHandle connect
-				vehicle_C3.SPD_Meter.input to cpu.read;
+				vehicle_C3.SPD_Meter.input to vehicle_C3.cpu.read;
 			interface HandleMic: SensorHandle connect
-				vehicle_C3.Mic.input to cpu.read;
+				vehicle_C3.Mic.input to vehicle_C3.cpu.read;
 			interface HandleCams: SensorHandle connect
-				vehicle_C3.Cams.input to cpu.read;
+				vehicle_C3.Cams.input to vehicle_C3.cpu.read;
 			interface CNNInterface: Forward connect
-				cpu.communication to gpu.communication;
+				vehicle_C3.cpu.communication to vehicle_C3.gpu.communication;
 			interface Act: ActAuto connect
-				gpu.communication to controller.inputCommunication;
+				vehicle_C3.gpu.communication to vehicle_C3.controller.inputCommunication;
 			interface UIComs: Forward connect
-				cpu.communication to ui.read;
+				vehicle_C3.cpu.communication to vehicle_C3.ui.read;
 			interface motorCtrl: controlMotor connect
-				gpu.write to vehicle_C3.motor_C3.motorHub;
+				vehicle_C3.gpu.write to vehicle_C3.motor_C3.motorHub;
 		}	
 	}
 		
@@ -169,17 +192,17 @@ package ElectricVehicleUsages {
 		part HumanDrive: DriverDrivingModule {
 			
 			interface HandleRADAR: SensorHandle connect
-				vehicle_C3.RADAR.input to cpu.read;
+				vehicle_C3.RADAR.input to vehicle_C3.cpu.read;
 			interface HandleSPD_Meter: SensorHandle connect
-				vehicle_C3.SPD_Meter.input to cpu.read;
+				vehicle_C3.SPD_Meter.input to vehicle_C3.cpu.read;
 			interface HandleCams: SensorHandle connect
-				vehicle_C3.Cams.input to cpu.read;
+				vehicle_C3.Cams.input to vehicle_C3.cpu.read;
 			interface actMan: ActManual connect
-				human.manualcontrol to controller.human;
+				human.manualcontrol to vehicle_C3.controller.human;
 			interface UIComs: Forward connect
-				cpu.communication to ui.read;
+				vehicle_C3.cpu.communication to vehicle_C3.ui.read;
 			interface motorCtrl: controlMotor connect
-				cpu.write to vehicle_C3.motor_C3.motorHub;
+				vehicle_C3.cpu.write to vehicle_C3.motor_C3.motorHub;
 		}	
 	}
 	
@@ -187,28 +210,28 @@ package ElectricVehicleUsages {
 		part RemoteDrive: RemoteDrivingModule {
 			
 			interface HandleRADAR: SensorHandle connect
-				vehicle_C3.RADAR.input to cpu.read;
+				vehicle_C3.RADAR.input to vehicle_C3.cpu.read;
 			interface HandleSPD_Meter: SensorHandle connect
-				vehicle_C3.SPD_Meter.input to cpu.read;
+				vehicle_C3.SPD_Meter.input to vehicle_C3.cpu.read;
 			interface HandleCams: SensorHandle connect
-				vehicle_C3.Cams.input to cpu.read;
+				vehicle_C3.Cams.input to vehicle_C3.cpu.read;
 			interface transmitComs5G: Forward connect
-				c5g.output to cpu.communication;
+				vehicle_C3.c5g.output to vehicle_C3.cpu.communication;
 			interface transmitComsWifi: Forward connect
-				cw.output to cpu.communication;
+				vehicle_C3.cw.output to vehicle_C3.cpu.communication;
 			interface transmitComsBluetooth: Forward connect
-				cb.output to cpu.communication;
+				vehicle_C3.cb.output to vehicle_C3.cpu.communication;
 			interface actMan: ActManual connect
-				cpu.communication to controller.remote;
+				vehicle_C3.cpu.communication to vehicle_C3.controller.remote;
 			interface UIComs: Forward connect
-				cpu.communication to ui.read;
+				vehicle_C3.cpu.communication to vehicle_C3.ui.read;
 			interface motorCtrl: controlMotor connect
-				cpu.write to vehicle_C3.motor_C3.motorHub;
+				vehicle_C3.cpu.write to vehicle_C3.motor_C3.motorHub;
 		}	
 	}	
 	
 	part E_VehicleTotal subsets E_Vehicle_Remote, E_Vehicle_Automatic, E_Vehicle_Manual{
-			
+			attribute redefines primaryEncryption = Encryption::UDP;
 	}
 
 }

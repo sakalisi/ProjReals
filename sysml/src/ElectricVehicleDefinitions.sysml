@@ -19,7 +19,43 @@ package ElectricVehicleDefinitions {
 		attribute requiredBatteryPower :> ISQ::energy;
 		attribute currentBatteryLife:> ISQ::energy;
 		attribute maxBatteryLife :> ISQ::energy;
+		attribute currentMessageFrequency :> ISQ::frequency;
+		attribute maximumAcceptedFrequency :> ISQ::frequency;
+		attribute currentSpeed:> ISQ::speed;
+		attribute maxAcceptedSpeed :> ISQ::speed;
+		attribute currentMode: VehicleActionDefinition::Mode;
+		attribute primaryEncryption: Encryption;
 	}
+	
+	enum def Encryption {UDP; TCP; I2C; UART; SPI;}
+	enum def SecurityModeBluetooth {NONSECURE; SERVICE; LINK;}
+	enum def SecurityLevelBluetooth {ONE; TWO; THREE; FOUR;}
+	enum def SecurityModeWifi {WPA3; WPA2; WPA_Personal; WEP; OPEN; WPA3_2_Transitional;}
+	enum def SecurityMode5G {MUTUAL; SIP;}
+		
+	constraint def BatteryConstraint;
+	constraint def LatencyConstraint;
+	constraint def SpeedLimitationConstraint;
+	constraint def CameraPixelationConstraint;
+	constraint def CameraFOVConstraint;
+	constraint def LidarBeamDivConstraint;
+	constraint def LidarRangeConstraint;
+	constraint def RadarRangeConstraint;
+	constraint def GPSAccuracyConstraint;
+	constraint def batteryChargeSpeedConstraint;
+	constraint def batteryOutputConstraint;
+	constraint def massConstraint;
+	constraint def telemetryEncryptionConstraint;
+	constraint def vehicleMonitoringConstraint;
+	constraint def BluetoothSecurityandCountConstraint;
+	constraint def WifiSecurityConstraint;
+	constraint def Module5GSecurityConstraint;
+	constraint def RegularMaintenanceConstraint;
+	constraint def sensorAnomalyConstraint;
+	constraint def modeLatencyConstraint;
+	constraint def modeDisplayConstraint;
+	constraint def speedDisplayConstraint;
+	constraint def locationDisplayConstraint;
 	
 	
 	/*
@@ -61,6 +97,7 @@ package ElectricVehicleDefinitions {
         
         attribute ProcessorClockRate;
         attribute ProcessorComputePotential;
+        attribute storedMemGPSPrevLocation;
     }
 	part def GPU :> processor {
         port communication: ComputeCommunicationIF;
@@ -72,6 +109,8 @@ package ElectricVehicleDefinitions {
 	part def Battery {
 		attribute capacity :> ISQ::energy;
 		attribute mass :> ISQ::mass;
+		attribute output :> ISQ::power;
+		attribute chargeRate;
 	}
 	 part def HumanDrivingDevices{
     	port manualcontrol: ManualControlIF;
@@ -87,6 +126,8 @@ package ElectricVehicleDefinitions {
     part def UI {
     	port read: ComputeCommunicationIF;
 		attribute rating :> ISQ::power;
+		attribute DisplaySpeed :> ISQ::speed;
+		attribute currentMode: VehicleActionDefinition::Mode;
     }
 	
 	/* Sensor Definitions */
@@ -94,6 +135,7 @@ package ElectricVehicleDefinitions {
 		port input: SensorReadIF;
 		attribute output :> ISQ::voltage;
 		attribute mass :> ISQ::mass;
+		attribute latency:> ISQ::time;
 	}
 	part def GPS :> Sensor {
     	port communication: ComputeCommunicationIF; 
@@ -103,6 +145,9 @@ package ElectricVehicleDefinitions {
     	attribute antenna;
     	attribute satelliteCount;
     	attribute augmentationAlgorithms;
+    	attribute currentLocation;
+    	attribute currentSpeedLimit;
+    	attribute frequencyOfUpdates;
 	}
 	part def Lidar :> Sensor{
     	port communication: ComputeCommunicationIF; 
@@ -111,6 +156,7 @@ package ElectricVehicleDefinitions {
     	attribute wavelength :> ISQ::length;
     	attribute beamDivergence;
     	attribute multiEchoCepacity;
+    	attribute range;
 	}
 	
 	part def Radar :> Sensor{
@@ -119,6 +165,7 @@ package ElectricVehicleDefinitions {
     	attribute transmitterPower :> rating;
     	attribute antennaSize;
     	attribute freq :> ISQ::frequency;
+    	attribute range;
 	}
 	
 	part def Speedometer :> Sensor{
@@ -151,7 +198,6 @@ package ElectricVehicleDefinitions {
 		port remote: RemoteControlIF;
 	}
 	
-	
 	/*Module Definitions */
 	doc /* 
 	 * Modules are used to ensure added functionality, like 5G, etc that are not sensors, but provide
@@ -164,47 +210,37 @@ package ElectricVehicleDefinitions {
 		attribute count;
 		port output: ComputeCommunicationIF;
 	}
-	part def connection_5G :> Module;
-	part def connection_bluetooth :> Module;
-	part def connection_wifi :> Module;
+	part def connection_5G :> Module {
+		attribute redefines SecurityProtocol: SecurityMode5G;
+	}
+	part def connection_bluetooth :> Module {
+		attribute securityLevel: SecurityLevelBluetooth; 
+		attribute redefines SecurityProtocol: SecurityModeBluetooth;  
+	}
+	part def connection_wifi :> Module {
+		attribute redefines SecurityProtocol: SecurityModeWifi;
+	}
 	
 	/* Defining the Autopilot Module */
+	
 	part def AutonomousDrivingModule {
-        part cpu: CPU;
-        part gpu: GPU;
-        part sensors: Sensor;
-        part controller: Controller;
-        part module: Module;
-        part ui: UI;
         
         attribute sensorTypes;
     }
 	
 	part def DriverDrivingModule{
 		part human: HumanDrivingDevices;
-		part controller: Controller;
-		part gps: GPS;
-		part ui: UI;
-		part cpu: CPU;
 		
 		attribute Lag;
 	}
 	
 	part def RemoteDrivingModule{
 		part remote: RemoteDevices;
-		part controller: Controller;
-		part c5g: connection_5G;
-		part cw: connection_wifi;
-		part cb: connection_bluetooth;
-		part sensors: Sensor;
-		part ui: UI;
-		part cpu: CPU;
 		
 		attribute Lag;
 	}
 	
-	/* PORT DEFINITIONS */
-	
+	/* PORT DEFINITIONS */	
 	port def DriveIF { 
 		in driveTorque :> ISQ::torque;
 		attribute ConnectionLag :> ISQ::time;
