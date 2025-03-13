@@ -1,0 +1,55 @@
+package 'ElectricVehicleAnalysis' {
+	private import ScalarValues::Real;
+	private import SI::*;
+	private import 'Calculation Definitions'::*;
+	private import 'Analytical Constraints'::*;
+	private import USCustomaryUnits::*;
+	private import SequenceFunctions::size;
+	private import Quantities::ScalarQuantityValue;
+	private import ControlFunctions::*;
+	private import ScalarValues::Positive;
+	public import ElectricVehicleUsages::*;
+	public import Requirements_EV::*;
+	public import ElectricVehicleDefinitions::*;
+	public import VehicleActionDefinition::*;
+	
+	
+	attribute def WayPoint {
+		timeSwapCmdInit : TimeValue;
+		timePrevAction : TimeValue;
+		fromMode : Mode;
+		toMode : Mode;	
+		eventCycles : TimeValue;
+	}
+	
+	analysis def ModeSwappingLatency {
+		subject e_vehicle :> E_VehicleTotal;
+		objective switchLatency : ModeSwitchRequirement {
+			/*
+			 * The objective of this analysis is to determine whether the
+			 * subject vehicle can satisfy the minimum latency requirement.
+			 */
+			
+			assume constraint  {
+				e_vehicle.cpu.ProcessorClockRate == 100 [1/s]
+			}
+			
+			require constraint constraint_forCheckingLatency: modeLatencyConstraint{
+				clockLatencySwitch < 0.01 [s]
+			}
+		}
+		
+		in attribute scenario : WayPoint[*];
+
+		calc SolveForTimeRequired {
+			in timea: TimeValue = scenario.timePrevAction;
+			in timeb: TimeValue = scenario.timeSwapCmdInit;
+			in frequency : FrequencyValue = e_vehicle.cpu.ProcessorClockRate;
+			in cycles : ScalarValues::Real;
+			
+			out waitTime: TimeValue = (cycles / frequency) - (timeb - timea) ;
+		}
+		
+        return clockLatencySwitch : FrequencyValue = 1 / SolveForTimeRequired.waitTime;
+    }
+}

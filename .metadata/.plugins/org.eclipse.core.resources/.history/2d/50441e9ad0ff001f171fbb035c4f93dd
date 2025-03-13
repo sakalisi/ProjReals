@@ -1,0 +1,28 @@
+package ElectricVehicleMissionContext {
+	private import CauseAndEffect::*;
+	public import ElectricVehicleUsages::*;
+	public import ElectricVehicleDefinitions::*;
+	public import VehicleActionDefinition::*;
+	
+	part e_vehicle :> E_VehicleTotal;
+	
+	package context_defs {
+		part def Passenger;
+		part def Road;
+		part def ModeSelectionUnit {
+			port UI_to_ModeSelect {
+				
+			}
+			exhibit state ModesPossible {
+				action trans {
+					in modeSelect :> Mode;
+				}
+				state manual;
+				state remote;
+				state autonomous;
+				
+				first trans if (trans.modeSelect == Mode.Autonomous) then transition autonomous; 
+			}
+		}
+	}
+}

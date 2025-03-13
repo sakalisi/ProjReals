@@ -14,7 +14,9 @@ package VehicleActionDefinition {
 	part def VehicleCommand { }
 	part def MotionStatus { }
 	part def RemoteCommand { }
+	
 	enum def Mode {AUTONOMOUS; REMOTE; MANUAL;}
+	
 	part def RemoteControlData { }
 	
 	

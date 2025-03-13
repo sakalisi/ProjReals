@@ -1,0 +1,69 @@
+package ElectricVehicleMissionContext {
+	private import CauseAndEffect::*;
+	public import ElectricVehicleUsages::*;
+	public import ElectricVehicleDefinitions::*;
+	public import VehicleActionDefinition::*;
+	
+	
+	package context_defs {
+		part vehicle :> E_VehicleTotal;
+		
+		part def Passenger;
+		part def Road;
+		part def ModeSelectionUnit {
+			item commandChange;
+			item physicalActuatorData;
+			item remoteData;
+			port UI_to_ModeSelect : UIToModeSelectIF {
+				
+			}
+			
+			exhibit state ModesPossible {
+				state manual;
+				state remote;
+				state autonomous;
+				state intermediate;
+				
+				transition manual_to_autonomous
+					first manual
+					do send commandChange via UI_to_ModeSelect
+					then autonomous;
+				transition manual_to_remote
+					first manual
+					do send commandChange via UI_to_ModeSelect
+					then remote;
+				transition manual_to_manual
+					first manual
+					do send physicalActuatorData via vehicle.HumanDrive.actMan
+					then manual;
+				transition autonomous_to_autonomous
+					first autonomous
+					do action newAction {
+						action storeAndUseData : ProcessSensorData;
+						action computePath : ComputeDrivingDecision;
+					}
+					then autonomous;
+				transition autonomous_to_manual
+					first autonomous
+					do send commandChange via UI_to_ModeSelect
+					then manual;
+				transition autonomous_to_remote
+					first autonomous
+					do send commandChange via UI_to_ModeSelect
+					then remote;
+				transition remote_to_manual
+					first remote
+					do send commandChange via UI_to_ModeSelect
+					then manual;
+				transition remote_to_autonomous
+					first remote
+					do send commandChange via UI_to_ModeSelect
+					then autonomous;
+				transition remote_to_remote
+					first autonomous
+					do send remoteData via vehicle.actMan
+					then remote;
+			}
+		}
+	}
+}

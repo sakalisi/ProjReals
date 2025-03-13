@@ -247,6 +247,11 @@ package ElectricVehicleDefinitions {
 		attribute ConnectionLag :> ISQ::time;
 	}
 	
+	port def UIToModeSelectIF {
+		in userInput;
+		out mode;
+	}
+	
 	port def AxleMountIF { 
 		inout transferredTorque :> ISQ::torque;
 	}

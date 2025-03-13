@@ -41,13 +41,13 @@ package 'ElectricVehicleAnalysis' {
 		
 		in attribute scenario : WayPoint[*];
 
-		action SolveForTimeRequired {
+		calc SolveForTimeRequired {
 			in timea: TimeValue = scenario.timePrevAction;
 			in timeb: TimeValue = scenario.timeSwapCmdInit;
 			in frequency : FrequencyValue = e_vehicle.cpu.ProcessorClockRate;
 			in cycles : ScalarValues::Real;
 			
-			out waitTime: TimeValue = (cycles / frequency) - (timeb - timea) ;
+			return waitTime: TimeValue = (cycles / frequency) - (timeb - timea) ;
 		}
 		
         return clockLatencySwitch : FrequencyValue = 1 / SolveForTimeRequired.waitTime;

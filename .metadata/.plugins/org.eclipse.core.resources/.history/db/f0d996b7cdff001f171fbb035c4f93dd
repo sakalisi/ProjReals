@@ -1,0 +1,7 @@
+package ElectricVehicleBehavior {
+	private import CauseAndEffect::*;
+	public import ElectricVehicleUsages::*;
+	public import ElectricVehicleDefinitions::*;
+	
+	part e_vehicle :> E_VehicleTotal;
+}
