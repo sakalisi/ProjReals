@@ -92,7 +92,7 @@ package ElectricVehicleDefinitions {
 		attribute memory;	
 		attribute rating :> ISQ::power;
         
-        attribute ProcessorClockRate : FrequencyValue;
+        attribute ProcessorClockRate;
 	}
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;

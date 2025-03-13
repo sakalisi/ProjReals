@@ -1,0 +1,58 @@
+package Validation_EV {
+    private import Requirements_EV::*;
+    
+    package 'Validation Requirements' {
+        
+        validation def <'V1'> ValidateAutonomousOperation {
+            doc /* Validate whether the constraints of autonomous operation are met. */
+            
+            check constraint ValidateLiDARAccuracy: LidarBeamDivConstraint;
+            check constraint ValidateLiDARRange: LidarRangeConstraint;
+            check constraint ValidateSensorLatency: LatencyConstraint;
+            check constraint ValidateCameraAccuracy: CameraPixelationConstraint;
+            check constraint ValidateCameraFOV: CameraFOVConstraint;
+            check constraint ValidateGPSAccuracy: GPSAccuracyConstraint;
+            check constraint ValidateRadarRange: RadarRangeConstraint;
+            check constraint ValidateLawfulSpeed: SpeedLimitationConstraint;
+        }
+        
+        validation def <'V2'> ValidatePowerRequirements {
+            doc /* Validate whether power constraints are met. */
+            
+            check constraint ValidateBatteryOutput: batteryOutputConstraint;
+            check constraint ValidateMass: massConstraint;
+            check constraint ValidateBatteryChargeSpeed: batteryChargeSpeedConstraint;
+            check constraint ValidateBatteryStorage: BatteryConstraint;
+        }
+        
+        validation def <'V3'> ValidateConnectivity {
+            doc /* Ensure security constraints for connectivity are met. */
+            
+            check constraint ValidateGPSSecurity: telemetryEncryptionConstraint;
+            check constraint ValidateBluetoothSecurity: BluetoothSecurityandCountConstraint;
+            check constraint ValidateWiFiSecurity: WifiSecurityConstraint;
+            check constraint Validate5GSecurity: Module5GSecurityConstraint;
+        }
+        
+        validation def <'V4'> ValidateMaintenanceRequirements {
+            doc /* Validate maintenance constraints to ensure timely upkeep. */
+            
+            check constraint ValidateRegularMaintenance: RegularMaintenanceConstraint;
+            check constraint ValidateSensorAnomalies: sensorAnomalyConstraint;
+        }
+        
+        validation def <'V5'> ValidateModeSwitching {
+            doc /* Ensure mode switching latency is within acceptable limits. */
+            
+            check constraint ValidateModeSwitchLatency: modeLatencyConstraint;
+        }
+        
+        validation def <'V6'> ValidateUserInterface {
+            doc /* Ensure the user interface correctly displays vehicle information. */
+            
+            check constraint ValidateModeDisplay: modeDisplayConstraint;
+            check constraint ValidateSpeedDisplay: speedDisplayConstraint;
+            check constraint ValidateLocationDisplay: locationDisplayConstraint;
+        }
+    }
+}

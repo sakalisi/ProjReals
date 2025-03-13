@@ -91,13 +91,13 @@ package ElectricVehicleDefinitions {
 		attribute computationSpeed;
 		attribute memory;	
 		attribute rating :> ISQ::power;
-        
-        attribute ProcessorClockRate : FrequencyValue;
 	}
 	part def CPU :> processor {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
         port write: ComputeWithVariableIF;
+        
+        attribute ProcessorClockRate;
         attribute ProcessorComputePotential;
         attribute storedMemGPSPrevLocation;
     }
@@ -105,6 +105,7 @@ package ElectricVehicleDefinitions {
         port communication: ComputeCommunicationIF;
         port read: ComputeWithVariableIF;
         port write: ComputeWithVariableIF;
+        attribute ProcessorClockRate;
         attribute ProcessorComputePotential;
     }
 	part def Battery {

@@ -1,0 +1,58 @@
+package Validation_EV {
+    private import Requirements_EV::*;
+    
+    package 'Validation Requirements' {
+        
+        validation def <'V1'> ValidateAutonomousOperation {
+            doc /* Validate whether the constraints of autonomous operation are met. */
+            
+            check constraint ValidateLiDARAccuracy: Requirements_EV::AutonomousOperationRequirement::LidarBeamDivConstraint;
+            check constraint ValidateLiDARRange: Requirements_EV::AutonomousOperationRequirement::LidarRangeConstraint;
+            check constraint ValidateSensorLatency: Requirements_EV::AutonomousOperationRequirement::LatencyConstraint;
+            check constraint ValidateCameraAccuracy: Requirements_EV::AutonomousOperationRequirement::CameraPixelationConstraint;
+            check constraint ValidateCameraFOV: Requirements_EV::AutonomousOperationRequirement::CameraFOVConstraint;
+            check constraint ValidateGPSAccuracy: Requirements_EV::AutonomousOperationRequirement::GPSAccuracyConstraint;
+            check constraint ValidateRadarRange: Requirements_EV::AutonomousOperationRequirement::RadarRangeConstraint;
+            check constraint ValidateLawfulSpeed: Requirements_EV::AutonomousOperationRequirement::SpeedLimitationConstraint;
+        }
+        
+        validation def <'V2'> ValidatePowerRequirements {
+            doc /* Validate whether power constraints are met. */
+            
+            check constraint ValidateBatteryOutput: Requirements_EV::PowerRequirement::batteryOutputConstraint;
+            check constraint ValidateMass: Requirements_EV::PowerRequirement::massConstraint;
+            check constraint ValidateBatteryCharge Speed: Requirements_EV::PowerRequirement::batteryChargeSpeedConstraint;
+            check constraint ValidateBatteryStorage: Requirements_EV::PowerRequirement::BatteryConstraint;
+        }
+        
+        validation def <'V3'> Validate Connectivity {
+            doc /* Ensure security constraints for connectivity are met. */
+            
+            check constraint Validate GPS Security: Requirements_EV::ConnectivityRequirement::telemetryEncryptionConstraint;
+            check constraint Validate Bluetooth Security: Requirements_EV::ConnectivityRequirement::BluetoothSecurityandCountConstraint;
+            check constraint Validate WiFi Security: Requirements_EV::ConnectivityRequirement::WifiSecurityConstraint;
+            check constraint Validate 5G Security: Requirements_EV::ConnectivityRequirement::Module5GSecurityConstraint;
+        }
+        
+        validation def <'V4'> Validate Maintenance Requirements {
+            doc /* Validate maintenance constraints to ensure timely upkeep. */
+            
+            check constraint Validate Regular Maintenance: Requirements_EV::MaintenanceRequirement::RegularMaintenanceConstraint;
+            check constraint Validate Sensor Anomalies: Requirements_EV::MaintenanceRequirement::sensorAnomalyConstraint;
+        }
+        
+        validation def <'V5'> Validate Mode Switching {
+            doc /* Ensure mode switching latency is within acceptable limits. */
+            
+            check constraint Validate Mode Switch Latency: Requirements_EV::ModeSwitchRequirement::modeLatencyConstraint;
+        }
+        
+        validation def <'V6'> Validate User Interface {
+            doc /* Ensure the user interface correctly displays vehicle information. */
+            
+            check constraint Validate Mode Display: Requirements_EV::UIRequirement::modeDisplayConstraint;
+            check constraint Validate Speed Display: Requirements_EV::UIRequirement::speedDisplayConstraint;
+            check constraint Validate Location Display: Requirements_EV::UIRequirement::locationDisplayConstraint;
+        }
+    }
+}

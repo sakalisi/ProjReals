@@ -173,6 +173,4 @@ package VehicleActionDefinition {
 	    bind parse_command.control_command = execute_control.control_command;
 	    bind execute_control.vehicle_motion = vehicle_motion;
 	}
-	
-	action def performSelfTest;
 }

@@ -1,0 +1,79 @@
+package 'ElectricVehicleAnalysis' {
+	private import ScalarValues::Real;
+	private import SI::*;
+	private import 'Calculation Definitions'::*;
+	private import 'Analytical Constraints'::*;
+	private import USCustomaryUnits::*;
+	private import SequenceFunctions::size;
+	private import Quantities::ScalarQuantityValue;
+	private import ControlFunctions::*;
+	private import ScalarValues::Positive;
+	public import ElectricVehicleUsages::*;
+	public import Requirements_EV::*;
+	public import ElectricVehicleDefinitions::*;
+	
+	attribute def DistancePerEnergyValue :> ScalarQuantityValue;
+	
+	attribute def WayPoint {
+		time : TimeValue;
+		position : LengthValue;
+		speed : SpeedValue;    	
+	}
+	
+	analysis def batteryPowerEconomy {
+		subject e_vehicle :> E_VehicleTotal;
+		objective powerEconomy: PowerRequirement {
+			/*
+			 * The objective of this analysis is to determine whether the
+			 * subject vehicle can satisfy the fuel economy requirement.
+			 */
+			
+			assume constraint {
+				e_vehicle.rearAxleAssembly.rearWheel.wheelDiameter == 33 ['in'] &
+				e_vehicle.transmission.driveTrainEfficiency == 0.4
+			}
+			
+			require constraint constraint_forBatteryOutput: batteryOutputConstraint{
+				fuelEconomyResult > 3.85 [mi / kW * h]
+			}
+		}
+		
+		in attribute scenario : WayPoint[*];
+	
+		action solveForPower {
+			out power : PowerValue[*];
+			out acceleration : AccelerationValue[*];
+		
+			/*
+			 * Solve for the required engine power as a function of time
+			 * to support the scenario.
+			 */
+			assert constraint {
+				(1..size(scenario)-1)->forAll {in i: Positive;
+					StraightLineDynamicsEquations (
+						power#(i),
+						e_vehicle.mass,
+						scenario.time#(i+1) - scenario.time#(i),
+						scenario.position#(i),
+						scenario.speed#(i),
+						scenario.position#(i+1),
+						scenario.speed#(i+1),
+						acceleration#(i+1)                    
+					)
+				}
+			}
+		}
+		
+		then action solveForFuelConsumption {
+			in power : PowerValue[*] = solveForPower.power;
+			out fuelEconomy : DistancePerEnergyValue;
+		
+			/*
+			 * Solve for energy used in terms of kilowhatt hours. 
+			 */
+		}
+		
+        return fuelEconomyResult : DistancePerEnergyValue = solveForFuelConsumption.fuelEconomy;
+	}
+	
+}
